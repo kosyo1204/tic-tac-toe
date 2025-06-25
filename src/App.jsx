@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+// todo: BoardにSquareの状態を管理させる。現状Squareが管理。
+// 子から親へ通知するか、親が子へ問いあわせることもできるが、リファクタが困難になってしまう？
+// Reactでは子から親へ状態を上げる（リフトアップ）のが一般的。複数の子に共通のstateを定義することもできる
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function Square() {
+  // useStateでマスの値を管理（初期値はnull）
+  // それぞれ独自のStateを有する
+  const [value, setValue] = useState(null);
+
+  // onClickハンドラから呼び出すことでSquareを再レンダリング
+  function handleClick() {
+    setValue('X');
+  }
+
+  return <button
+    className="square"
+    onClick={handleClick}
+  >
+    {value}
+  </button>
 }
 
-export default App
+// default: このファイルのメイン関数であることを示す
+export default function Board() {
+  // Boardコンポーネント: 3x3のマスを描画
+  return (
+    <>
+      <div className="board-row">
+        {/* 1行目 */}
+        <Square />
+        <Square />
+        <Square />
+      </div>
+      <div className="board-row">
+        {/* 2行目 */}
+        <Square />
+        <Square />
+        <Square />
+      </div>
+      <div className="board-row">
+        {/* 3行目 */}
+        <Square />
+        <Square />
+        <Square />
+      </div>
+    </>
+  );
+}
