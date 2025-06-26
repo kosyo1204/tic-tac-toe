@@ -14,21 +14,40 @@ function Square({ value, onSquareClick }) {
   </button>
 }
 
-// default: このファイルのメイン関数であることを示す
 export default function Board() {
+  // 手番の管理：xIsNextは次の手番がXかどうかを示す
+  const [xIsNext, setXIsNext] = useState(true);
   const [squares, setSquares] = useState(Array(9).fill(null));
 
   // onClickハンドラから呼び出すことでSquareを再レンダリング
   function handleClick(i) {
+    // すでにマスが埋まっている場合は何もしない
+    if (squares[i] || calculateWinner(squares)) return;
     // シャローコピー
     const nextSquares = squares.slice();
     nextSquares[i] = 'X';
+    if (xIsNext) {
+      nextSquares[i] = 'X';
+    } else {
+      nextSquares[i] = 'O';
+    }
     setSquares(nextSquares);
+    setXIsNext(!xIsNext); // 手番を切り替える
+  }
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = `Winner: ${winner}`; // 勝者がいる場合のメッセージ
+  }
+  else {
+    status = `Next player: ${xIsNext ? 'X' : 'O'}`; // 勝者がいない場合のメッセージ
   }
 
   // Boardコンポーネント: 3x3のマスを描画
   return (
     <>
+      <div className="status">{status}</div>
       <div className="board-row">
         {/* 1行目 */}
         <Square value={squares[0]} onSquareClick={() => handleClick(0)}/>
@@ -49,4 +68,26 @@ export default function Board() {
       </div>
     </>
   );
+}
+
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2], // 1行目
+    [3, 4, 5], // 2行目
+    [6, 7, 8], // 3行目
+    [0, 3, 6], // 1列目
+    [1, 4, 7], // 2列目
+    [2, 5, 8], // 3列目
+    [0, 4, 8], // 左上から右下の斜め
+    [2, 4, 6] // 左下から右上の斜め
+  ];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a]; // 勝者を返す
+    }
+  }
+  
+  return null; // 勝者がいない場合はnullを返す
 }
