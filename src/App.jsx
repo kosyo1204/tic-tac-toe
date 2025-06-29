@@ -1,10 +1,7 @@
 import { useState } from 'react';
 
+// Squareコンポーネント: 1つのマスを表現し、クリックイベントを親に伝える責務を持つ
 function Square({ value, onSquareClick }) {
-  // useStateでマスの値を管理（初期値はnull）
-  // それぞれ独自のStateを有する
-  // const [value, setValue] = useState(null);
-
   return <button
     className="square"
     // クリックされたら親から渡された関数を呼び出す
@@ -14,8 +11,9 @@ function Square({ value, onSquareClick }) {
   </button>
 }
 
+// Boardコンポーネント: 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
 function Board({ squares, xIsNext, onPlay }) {
-  // onClickハンドラから呼び出すことでSquareを再レンダリング
+  // handleClick: 指定マスがクリックされた時の処理（値の更新と親への通知）の責務を持つ
   function handleClick(i) {
     // すでにマスが埋まっている場合は何もしない
     if (squares[i] || calculateWinner(squares)) return;
@@ -64,32 +62,44 @@ function Board({ squares, xIsNext, onPlay }) {
   );
 }
 
+// Gameコンポーネント: ゲーム全体の状態管理（履歴・手番・現在の盤面）と、履歴ジャンプ・盤面描画の責務を持つ
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const xIsNext = history.length % 2 === 0; // 偶数手番はX、奇数手番はO
   const [currentMove, setCurrentMove] = useState(0);
   const currentSquares = history[currentMove];
 
+  // handlePlay: 新しい盤面状態を履歴に追加し、現在の手番を更新する責務を持つ
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
+  // jumpTo: 指定した手番に履歴を巻き戻す責務を持つ
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
   }
 
+  // moves: 履歴リストを生成し、現在の手番かどうかで表示を切り替える責務を持つ
   const moves = history.map((squares, move) => {
     let description;
-    if (move > 0) {
-      description = `Go to move #${move}`;
-    } else {
+    if (move === 0) {
       description = 'Go to game start';
+    } else if (move === currentMove) {
+      description = `You are at move #${move}`;
+    } else {
+      description = `Go to move #${move}`;
     }
+
     return (
       <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
+        {/* JSX内ではif文を書けない */}
+        {move === currentMove ? (
+          <span>{description}</span>
+        ) : (
+          <button onClick={() => jumpTo(move)}>{description}</button>
+        )}
       </li>
     );
   });
@@ -101,12 +111,14 @@ export default function Game() {
         />
       </div>
       <div className='game-info'>
+        <p>手番の履歴</p>
         <ol>{moves}</ol>
       </div>
     </div>
   );
 }
 
+// calculateWinner: 現在の盤面から勝者を判定する責務を持つ
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2], // 1行目
@@ -125,6 +137,5 @@ function calculateWinner(squares) {
       return squares[a]; // 勝者を返す
     }
   }
-  
   return null; // 勝者がいない場合はnullを返す
 }
