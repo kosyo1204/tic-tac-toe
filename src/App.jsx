@@ -66,15 +66,34 @@ function Board({ squares, xIsNext, onPlay }) {
 }
 
 export default function Game() {
-  // 手番の管理：xIsNextは次の手番がXかどうかを示す
-  const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
-  const currentSquares = history[history.length - 1];
+  const xIsNext = history.length % 2 === 0; // 偶数手番はX、奇数手番はO
+  const [currentMove, setCurrentMove] = useState(0);
+  const currentSquares = history[currentMove];
 
   function handlePlay(nextSquares) {
-    setXIsNext(!xIsNext);
-    setHistory([...history, nextSquares]);
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
   }
+
+  function jumpTo(nextMove) {
+    setCurrentMove(nextMove);
+  }
+
+  const moves = history.map((squares, move) => {
+    let description;
+    if (move > 0) {
+      description = `Go to move #${move}`;
+    } else {
+      description = 'Go to game start';
+    }
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
 
   return (
     <div className='game'>
@@ -83,7 +102,7 @@ export default function Game() {
         />
       </div>
       <div className='game-info'>
-        <ol>{/*TODO*/}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
