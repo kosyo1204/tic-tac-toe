@@ -1,12 +1,36 @@
-# React + Vite
+# 概要
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Reactチュートリアルの三目並び作成+いくつかの改善点を実施
+https://ja.react.dev/learn/tutorial-tic-tac-toe#lifting-state-up-again
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 改善点（Reactチュートリアル）
 
-## Expanding the ESLint configuration
+### 1.現在の着手の部分だけ、ボタンではなく “You are at move #…” というメッセージを表示するようにする。
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 今の手番にボタンでジャンプできる必要はないため、テキストで表示する。
+
+### 2.マス目を全部ハードコードするのではなく、Board を 2 つのループを使ってレンダーするよう書き直す。
+
+- 以下のハードコードをループでレンダーする。board-rowを3回、その中でSquareを3回ずつ回せばよさそう。
+     
+```
+    <div className="board-row">
+    {/* 1行目 */}
+    <Square value={squares[0]} onSquareClick={() => handleClick(0)}/>
+    <Square value={squares[1]} onSquareClick={() => handleClick(1)} /> {/* 1行目2列目 */}
+    <Square value={squares[2]} onSquareClick={() => handleClick(2)} /> {/* 1行目3列目 */}
+    </div>
+```
+
+### 3.手順を昇順または降順でソートできるトグルボタンを追加する。
+
+必要？
+
+### 4.どちらかが勝利したときに、勝利につながった 3 つのマス目をハイライト表示する。引き分けになった場合は、引き分けになったという結果をメッセージに表示する。
+
+- どこで決着がついたのかを表示する
+
+### 5.着手履歴リストで、各着手の場所を (row, col) という形式で表示する。
+
+- どこに着番したのかがわかるように

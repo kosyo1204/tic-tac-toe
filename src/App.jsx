@@ -39,7 +39,6 @@ function Board({ squares, xIsNext, onPlay }) {
     status = `Next player: ${xIsNext ? 'X' : 'O'}`; // 勝者がいない場合のメッセージ
   }
 
-  // Boardコンポーネント: 3x3のマスを描画
   return (
     <>
       <div className="status">{status}</div>
