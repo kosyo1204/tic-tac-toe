@@ -35,24 +35,21 @@ function Board({ squares, xIsNext, onPlay }) {
   return (
     <>
       <div className="status">{status}</div>
-      <div className="board-row">
-        {/* 1行目 */}
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)}/>
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} /> {/* 1行目2列目 */}
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} /> {/* 1行目3列目 */}
-      </div>
-      <div className="board-row">
-        {/* 2行目 */}
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} /> {/* 2行目1列目 */}
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} /> {/* 2行目2列目 */}
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} /> {/* 2行目3列目 */}
-      </div>
-      <div className="board-row">
-        {/* 3行目 */}
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} /> {/* 3行目1列目 */}
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} /> {/* 3行目2列目 */}
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} /> {/* 3行目3列目 */}
-      </div>
+      {/* keyとして使うため、...Array(3)ではなくハードコード */}
+      {[0, 1, 2].map(row => (
+        <div className="board-row" key={row}>
+          {[0, 1, 2].map(col => {
+            const col_idx = row * 3 + col;
+            return (
+              <Square
+                key={col_idx}
+                value={squares[col_idx]}
+                onSquareClick={() => handleClick(col_idx)}
+              />
+            )
+          })}
+        </div>
+      ))}
     </>
   );
 }
