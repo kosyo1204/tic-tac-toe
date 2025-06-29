@@ -14,11 +14,7 @@ function Square({ value, onSquareClick }) {
   </button>
 }
 
-export default function Board() {
-  // 手番の管理：xIsNextは次の手番がXかどうかを示す
-  const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState(Array(9).fill(null));
-
+function Board({ squares, xIsNext, onPlay }) {
   // onClickハンドラから呼び出すことでSquareを再レンダリング
   function handleClick(i) {
     // すでにマスが埋まっている場合は何もしない
@@ -31,8 +27,7 @@ export default function Board() {
     } else {
       nextSquares[i] = 'O';
     }
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext); // 手番を切り替える
+    onPlay(nextSquares);
   }
 
   const winner = calculateWinner(squares);
@@ -67,6 +62,30 @@ export default function Board() {
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} /> {/* 3行目3列目 */}
       </div>
     </>
+  );
+}
+
+export default function Game() {
+  // 手番の管理：xIsNextは次の手番がXかどうかを示す
+  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const currentSquares = history[history.length - 1];
+
+  function handlePlay(nextSquares) {
+    setXIsNext(!xIsNext);
+    setHistory([...history, nextSquares]);
+  }
+
+  return (
+    <div className='game'>
+      <div className='game-board'>
+        <Board squares={currentSquares} xIsNext={xIsNext} onPlay={handlePlay}
+        />
+      </div>
+      <div className='game-info'>
+        <ol>{/*TODO*/}</ol>
+      </div>
+    </div>
   );
 }
 
