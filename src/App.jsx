@@ -19,12 +19,7 @@ function Board({ squares, xIsNext, onPlay }) {
     if (squares[i] || calculateWinner(squares)) return;
     // シャローコピー
     const nextSquares = squares.slice();
-    nextSquares[i] = 'X';
-    if (xIsNext) {
-      nextSquares[i] = 'X';
-    } else {
-      nextSquares[i] = 'O';
-    }
+    nextSquares[i] = xIsNext ? 'X' : 'O';
     onPlay(nextSquares);
   }
 
