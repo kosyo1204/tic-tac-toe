@@ -60,6 +60,7 @@ export default function Game() {
   const xIsNext = history.length % 2 === 0; // 偶数手番はX、奇数手番はO
   const [currentMove, setCurrentMove] = useState(0);
   const currentSquares = history[currentMove];
+  const [isAscending, toggleSort] = useState(true);
 
   // 新しい盤面状態を履歴に追加し、現在の手番を更新する責務を持つ
   function handlePlay(nextSquares) {
@@ -71,6 +72,10 @@ export default function Game() {
   // 指定した手番に履歴を巻き戻す責務を持つ
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
+  }
+
+  function sortMoves() {
+    toggleSort(!isAscending); //
   }
 
   // 履歴リストを生成し、現在の手番かどうかで表示を切り替える責務を持つ
@@ -104,7 +109,8 @@ export default function Game() {
       </div>
       <div className='game-info'>
         <p>手番の履歴</p>
-        <ol>{moves}</ol>
+        <button onClick={() => sortMoves()}>ソート順切り替え</button>
+        <ol>{isAscending === true ? moves : moves.reverse()}</ol>
       </div>
     </div>
   );
