@@ -1,10 +1,8 @@
 import { useState } from 'react';
 
-// 1つのマスを表現し、クリックイベントを親に伝える責務を持つ
 function Square({ value, onSquareClick }) {
   return <button
     className="square"
-    // クリックされたら親から渡された関数を呼び出す
     onClick={onSquareClick}
   >
     {value}
@@ -13,11 +11,9 @@ function Square({ value, onSquareClick }) {
 
 // 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
 function Board({ squares, xIsNext, onPlay }) {
-  // handleClick: 指定マスがクリックされた時の処理（値の更新と親への通知）の責務を持つ
   function handleClick(i) {
     // すでにマスが埋まっている場合は何もしない
     if (squares[i] || calculateWinner(squares)) return;
-    // シャローコピー
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? 'X' : 'O';
     onPlay(nextSquares);
@@ -25,12 +21,7 @@ function Board({ squares, xIsNext, onPlay }) {
 
   const winner = calculateWinner(squares);
   let status;
-  if (winner) {
-    status = `Winner: ${winner}`; // 勝者がいる場合のメッセージ
-  }
-  else {
-    status = `Next player: ${xIsNext ? 'X' : 'O'}`; // 勝者がいない場合のメッセージ
-  }
+  status = winner ? `Winner: ${winner}` : `Next player: ${xIsNext ? 'X' : 'O'}`;
 
   return (
     <>
@@ -59,26 +50,18 @@ export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isAscending, toggleSort] = useState(true);
-  const xIsNext = currentMove.length % 2 === 0; // 偶数手番はX、奇数手番はO
+  const xIsNext = currentMove % 2 === 0; // 偶数手番はX、奇数手番はO
   const currentSquares = history[currentMove];
 
-  // 新しい盤面状態を履歴に追加し、現在の手番を更新する責務を持つ
+  // 新しい盤面状態を履歴に追加し、現在の手番を更新
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
+  function jumpTo(nextMove) { setCurrentMove(nextMove); }
+  function sortMoves() { toggleSort(prev => !prev); } // !isAscendingでも良いが、推奨される記法を優先
 
-  // 指定した手番に履歴を巻き戻す責務を持つ
-  function jumpTo(nextMove) {
-    setCurrentMove(nextMove);
-  }
-
-  function sortMoves() {
-    toggleSort(!isAscending); 
-  }
-
-  // 履歴リストを生成し、現在の手番かどうかで表示を切り替える責務を持つ
   const moves = (isAscending ? history : [...history].reverse()).map((squares, move) => {
     const realMove = isAscending ? move : history.length - 1 - move
     let description;
@@ -110,14 +93,15 @@ export default function Game() {
       </div>
       <div className='game-info'>
         <p>手番の履歴</p>
-        <button onClick={() => sortMoves()}>ソート順切り替え</button>
+        <button onClick={sortMoves}>
+          {isAscending ? '降順にする' : '昇順にする'}
+        </button>
         <ol>{moves}</ol>
       </div>
     </div>
   );
 }
 
-// 現在の盤面から勝者を判定する責務を持つ
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2], // 1行目
