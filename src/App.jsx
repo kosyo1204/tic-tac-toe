@@ -57,10 +57,10 @@ function Board({ squares, xIsNext, onPlay }) {
 // ゲーム全体の状態管理（履歴・手番・現在の盤面）と、履歴ジャンプ・盤面描画の責務を持つ
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
-  const xIsNext = history.length % 2 === 0; // 偶数手番はX、奇数手番はO
   const [currentMove, setCurrentMove] = useState(0);
-  const currentSquares = history[currentMove];
   const [isAscending, toggleSort] = useState(true);
+  const xIsNext = currentMove.length % 2 === 0; // 偶数手番はX、奇数手番はO
+  const currentSquares = history[currentMove];
 
   // 新しい盤面状態を履歴に追加し、現在の手番を更新する責務を持つ
   function handlePlay(nextSquares) {
@@ -75,27 +75,28 @@ export default function Game() {
   }
 
   function sortMoves() {
-    toggleSort(!isAscending); //
+    toggleSort(!isAscending); 
   }
 
   // 履歴リストを生成し、現在の手番かどうかで表示を切り替える責務を持つ
-  const moves = history.map((squares, move) => {
+  const moves = (isAscending ? history : [...history].reverse()).map((squares, move) => {
+    const realMove = isAscending ? move : history.length - 1 - move
     let description;
-    if (move === 0) {
+    if (realMove === 0) {
       description = 'Go to game start';
-    } else if (move === currentMove) {
-      description = `You are at move #${move}`;
+    } else if (realMove === currentMove) {
+      description = `You are at move #${realMove}`;
     } else {
-      description = `Go to move #${move}`;
+      description = `Go to move #${realMove}`;
     }
 
     return (
-      <li key={move}>
+      <li key={realMove}>
         {/* JSX内ではif文を書けない */}
-        {move === currentMove ? (
+        {realMove === currentMove ? (
           <span>{description}</span>
         ) : (
-          <button onClick={() => jumpTo(move)}>{description}</button>
+          <button onClick={() => jumpTo(realMove)}>{description}</button>
         )}
       </li>
     );
@@ -110,7 +111,7 @@ export default function Game() {
       <div className='game-info'>
         <p>手番の履歴</p>
         <button onClick={() => sortMoves()}>ソート順切り替え</button>
-        <ol>{isAscending === true ? moves : moves.reverse()}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
