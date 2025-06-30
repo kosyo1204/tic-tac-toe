@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-// Squareコンポーネント: 1つのマスを表現し、クリックイベントを親に伝える責務を持つ
+// 1つのマスを表現し、クリックイベントを親に伝える責務を持つ
 function Square({ value, onSquareClick }) {
   return <button
     className="square"
@@ -11,7 +11,7 @@ function Square({ value, onSquareClick }) {
   </button>
 }
 
-// Boardコンポーネント: 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
+// 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
 function Board({ squares, xIsNext, onPlay }) {
   // handleClick: 指定マスがクリックされた時の処理（値の更新と親への通知）の責務を持つ
   function handleClick(i) {
@@ -54,26 +54,26 @@ function Board({ squares, xIsNext, onPlay }) {
   );
 }
 
-// Gameコンポーネント: ゲーム全体の状態管理（履歴・手番・現在の盤面）と、履歴ジャンプ・盤面描画の責務を持つ
+// ゲーム全体の状態管理（履歴・手番・現在の盤面）と、履歴ジャンプ・盤面描画の責務を持つ
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const xIsNext = history.length % 2 === 0; // 偶数手番はX、奇数手番はO
   const [currentMove, setCurrentMove] = useState(0);
   const currentSquares = history[currentMove];
 
-  // handlePlay: 新しい盤面状態を履歴に追加し、現在の手番を更新する責務を持つ
+  // 新しい盤面状態を履歴に追加し、現在の手番を更新する責務を持つ
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
-  // jumpTo: 指定した手番に履歴を巻き戻す責務を持つ
+  // 指定した手番に履歴を巻き戻す責務を持つ
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
   }
 
-  // moves: 履歴リストを生成し、現在の手番かどうかで表示を切り替える責務を持つ
+  // 履歴リストを生成し、現在の手番かどうかで表示を切り替える責務を持つ
   const moves = history.map((squares, move) => {
     let description;
     if (move === 0) {
@@ -110,7 +110,7 @@ export default function Game() {
   );
 }
 
-// calculateWinner: 現在の盤面から勝者を判定する責務を持つ
+// 現在の盤面から勝者を判定する責務を持つ
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2], // 1行目
