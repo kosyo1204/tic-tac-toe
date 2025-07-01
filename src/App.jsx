@@ -15,36 +15,42 @@ function Square({ value, onSquareClick, highlight }) {
 
 // 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
 function Board({ squares, xIsNext, onPlay }) {
+  // 勝敗判定は1回だけ
+  const { winner, winnerLine } = calculateWinner(squares) || {};
+  const isDraw = !winner && !squares.includes(null);
+  const status = isDraw
+    ? '引き分け'
+    : winner
+      ? `Winner: ${winner}`
+      : `Next player: ${xIsNext ? 'X' : 'O'}`;
+
   function handleClick(i) {
     // すでにマスが埋まっている || 勝敗が決している場合は何もしない
-    if (squares[i] || calculateWinner(squares)) return;
+    if (squares[i] || winner) return;
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? 'X' : 'O';
     onPlay(nextSquares);
   }
 
-  const { winner, winnerLine } = calculateWinner(squares) || {};
-  let status;
-  status = winner ? `Winner: ${winner}` : `Next player: ${xIsNext ? 'X' : 'O'}`;
+  // Square描画を関数化
+  function renderSquare(col_idx) {
+    const highlight = winnerLine ? winnerLine.includes(col_idx) : false;
+    return (
+      <Square
+        key={col_idx}
+        value={squares[col_idx]}
+        onSquareClick={() => handleClick(col_idx)}
+        highlight={highlight}
+      />
+    );
+  }
 
   return (
     <>
       <div className="status">{status}</div>
-      {/* keyとして使うため、...Array(3)ではなくハードコード */}
       {[0, 1, 2].map(row => (
         <div className="board-row" key={row}>
-          {[0, 1, 2].map(col => {
-            const col_idx = row * 3 + col;
-            const highlight = winnerLine ? winnerLine.includes(col_idx) : false;
-            return (
-              <Square
-                key={col_idx}
-                value={squares[col_idx]}
-                onSquareClick={() => handleClick(col_idx)}
-                highlight={highlight}
-              />
-            );
-          })}
+          {[0, 1, 2].map(col => renderSquare(row * 3 + col))}
         </div>
       ))}
     </>
