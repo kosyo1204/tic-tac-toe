@@ -1,44 +1,56 @@
 import { useState } from 'react';
 
-function Square({ value, onSquareClick }) {
-  return <button
-    className="square"
-    onClick={onSquareClick}
-  >
-    {value}
-  </button>
+function Square({ value, onSquareClick, highlight }) {
+  return (
+    <button
+      className={"square" + (highlight ? " highlight" : "")}
+      onClick={onSquareClick}
+      // style={highlight ? { color: 'red' } : {}}
+      style={highlight ? { backgroundColor: 'orange' } : {}}
+    >
+      {value}
+    </button>
+  );
 }
 
 // 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
 function Board({ squares, xIsNext, onPlay }) {
+  // 勝敗判定は1回だけ
+  const { winner, winnerLine } = calculateWinner(squares) || {};
+  const isDraw = !winner && !squares.includes(null);
+  const status = isDraw
+    ? '引き分け'
+    : winner
+      ? `Winner: ${winner}`
+      : `Next player: ${xIsNext ? 'X' : 'O'}`;
+
   function handleClick(i) {
-    // すでにマスが埋まっている場合は何もしない
-    if (squares[i] || calculateWinner(squares)) return;
+    // すでにマスが埋まっている || 勝敗が決している場合は何もしない
+    if (squares[i] || winner) return;
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? 'X' : 'O';
     onPlay(nextSquares);
   }
 
-  const winner = calculateWinner(squares);
-  let status;
-  status = winner ? `Winner: ${winner}` : `Next player: ${xIsNext ? 'X' : 'O'}`;
+  // Square描画を関数化
+  function renderSquare(col_idx) {
+    const highlight = winnerLine ? winnerLine.includes(col_idx) : false;
+    return (
+      <Square
+        key={col_idx}
+        value={squares[col_idx]}
+        onSquareClick={() => handleClick(col_idx)}
+        highlight={highlight}
+      />
+    );
+  }
 
   return (
     <>
       <div className="status">{status}</div>
-      {/* keyとして使うため、...Array(3)ではなくハードコード */}
       {[0, 1, 2].map(row => (
         <div className="board-row" key={row}>
-          {[0, 1, 2].map(col => {
-            const col_idx = row * 3 + col;
-            return (
-              <Square
-                key={col_idx}
-                value={squares[col_idx]}
-                onSquareClick={() => handleClick(col_idx)}
-              />
-            )
-          })}
+          {[0, 1, 2].map(col => renderSquare(row * 3 + col))}
         </div>
       ))}
     </>
@@ -117,7 +129,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a]; // 勝者を返す
+      return { winner: squares[a], winnerLine: lines[i]};
     }
   }
   return null; // 勝者がいない場合はnullを返す
