@@ -1,25 +1,29 @@
 import { useState } from 'react';
 
-function Square({ value, onSquareClick }) {
-  return <button
-    className="square"
-    onClick={onSquareClick}
-  >
-    {value}
-  </button>
+function Square({ value, onSquareClick, highlight }) {
+  return (
+    <button
+      className={"square" + (highlight ? " highlight" : "")}
+      onClick={onSquareClick}
+      // style={highlight ? { color: 'red' } : {}}
+      style={highlight ? { backgroundColor: 'orange' } : {}}
+    >
+      {value}
+    </button>
+  );
 }
 
 // 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
 function Board({ squares, xIsNext, onPlay }) {
   function handleClick(i) {
-    // すでにマスが埋まっている場合は何もしない
+    // すでにマスが埋まっている || 勝敗が決している場合は何もしない
     if (squares[i] || calculateWinner(squares)) return;
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? 'X' : 'O';
     onPlay(nextSquares);
   }
 
-  const winner = calculateWinner(squares);
+  const { winner, winnerLine } = calculateWinner(squares) || {};
   let status;
   status = winner ? `Winner: ${winner}` : `Next player: ${xIsNext ? 'X' : 'O'}`;
 
@@ -31,13 +35,15 @@ function Board({ squares, xIsNext, onPlay }) {
         <div className="board-row" key={row}>
           {[0, 1, 2].map(col => {
             const col_idx = row * 3 + col;
+            const highlight = winnerLine ? winnerLine.includes(col_idx) : false;
             return (
               <Square
                 key={col_idx}
                 value={squares[col_idx]}
                 onSquareClick={() => handleClick(col_idx)}
+                highlight={highlight}
               />
-            )
+            );
           })}
         </div>
       ))}
@@ -117,7 +123,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a]; // 勝者を返す
+      return { winner: squares[a], winnerLine: lines[i]};
     }
   }
   return null; // 勝者がいない場合はnullを返す
