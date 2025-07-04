@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 function Square({ value, onSquareClick, highlight }) {
+  console.log('Squareレンダリング', value);
   return (
     <button
       className={"square" + (highlight ? " highlight" : "")}
@@ -15,6 +16,7 @@ function Square({ value, onSquareClick, highlight }) {
 
 // 9つのSquareを並べて盤面を描画し、クリック時の処理・勝敗判定・状態表示の責務を持つ
 function Board({ squares, xIsNext, onPlay }) {
+  console.log('Boardレンダリング', squares);
   // 勝敗判定は1回だけ
   const { winner, winnerLine } = calculateWinner(squares) || {};
   const isDraw = !winner && !squares.includes(null);
@@ -59,6 +61,7 @@ function Board({ squares, xIsNext, onPlay }) {
 
 // ゲーム全体の状態管理（履歴・手番・現在の盤面）と、履歴ジャンプ・盤面描画の責務を持つ
 export default function Game() {
+  console.log('Gameレンダリング');
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isAscending, toggleSort] = useState(true);
