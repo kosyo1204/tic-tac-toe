@@ -1,10 +1,10 @@
 # 概要
 
-Reactチュートリアルの三目並び作成+いくつかの改善点を実施
-https://ja.react.dev/learn/tutorial-tic-tac-toe#lifting-state-up-again
+- Reactチュートリアルの三目並び作成+いくつかの改善点を実施
+- https://ja.react.dev/learn/tutorial-tic-tac-toe#lifting-state-up-again
 
 
-## 改善点（Reactチュートリアル）
+## 改善点
 
 ### 1.現在の着手の部分だけ、ボタンではなく “You are at move #…” というメッセージを表示するようにする。
 
@@ -25,21 +25,11 @@ https://ja.react.dev/learn/tutorial-tic-tac-toe#lifting-state-up-again
 
 ### 3.手順を昇順または降順でソートできるトグルボタンを追加する。
 
-順番movesをStateで管理することで実装
-movesをreverseした
+- 順番movesをStateで管理することで実装
+- movesをreverseした
 
 ### 4.どちらかが勝利したときに、勝利につながった 3 つのマス目をハイライト表示する。引き分けになった場合は、引き分けになったという結果をメッセージに表示する。
 
-勝ったらハイライト、9マス埋まったら引き分け
-winner変数をGameクラスに委譲
-    責務分離のため
-マスの色を状態管理？
-    どこまで区分して状態を持たせるべきか。
-
-勝ち負け
-
-### 5.着手履歴リストで、各着手の場所を (row, col) という形式で表示する。
-
-- どこに着番したのかがわかるように
-
-リスタートボタン
+- 勝敗判定用の関数に戻り値について、〇×に加えて勝敗が決したlineを追加し、ハッシュで返す
+- 勝敗判定用を動かすBoardでlineが帰ってくればSquareにhighlight変数を渡して、ハイライト表示
+- ※ハイライトはstateで持たない。他のStateによって管理できるため。
